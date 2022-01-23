@@ -4,21 +4,21 @@ import '@openzeppelin/contracts/access/Ownable.sol';
 import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import '@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol';
 
-contract Main is IERC20, IERC20Metadata, Ownable {
-  mapping(address => uint256) balances;
-  mapping(address => mapping(address => uint256)) allowances;
-
+contract LLC is IERC20, IERC20Metadata, Ownable {
   string private _name;
   string private _symbol;
   uint8 private _decimals;
   uint256 private _supplyLimit;
   uint256 private _totalSupply;
 
-  constructor(string memory coin_name, string memory coin_symbol) {
-    _name = coin_name;
+  mapping(address => uint256) private _balances;
+  mapping(address => mapping(address => uint256)) private _allowances;
+
+  constructor(string memory coin_symbol) {
+    _name = 'LLC';
     _symbol = coin_symbol;
-    _decimals = 18; // 10 ^ 18 = 1 LC
-    _supplyLimit = 1024;
+    _decimals = 18; // 10 ^ 18 = 1 LLC
+    _supplyLimit = 1024; // maximum supply = 1024
     _totalSupply = 0;
   }
 
@@ -54,7 +54,7 @@ contract Main is IERC20, IERC20Metadata, Ownable {
     * @dev Returns the amount of tokens owned by `account`.
     */
   function balanceOf(address account) external view virtual override returns (uint256) {
-    return balances[account];
+    return _balances[account];
   }
 
   modifier validAddress(address to) {
@@ -70,12 +70,10 @@ contract Main is IERC20, IERC20Metadata, Ownable {
     * Emits a {Transfer} event.
     */
   function transfer(address to, uint256 amount) public virtual override validAddress(to) returns (bool) {
-    if (amount > balances[msg.sender]) {
-      revert('amount too large');
-    }
+      require(_balances[msg.sender] >= amount, 'amount too large');
 
-    balances[msg.sender] -= amount;
-    balances[to] += amount;
+    _balances[msg.sender] -= amount;
+    _balances[to] += amount;
 
     emit Transfer(msg.sender, to, amount);
     
@@ -90,7 +88,7 @@ contract Main is IERC20, IERC20Metadata, Ownable {
     * This value changes when {approve} or {transferFrom} are called.
     */
   function allowance(address owner, address spender) external view virtual override returns (uint256) {
-    return allowances[owner][spender];
+    return _allowances[owner][spender];
   }
 
   /**
@@ -109,7 +107,7 @@ contract Main is IERC20, IERC20Metadata, Ownable {
     */
   function approve(address spender, uint256 amount) external virtual override validAddress(spender) returns (bool) {
     address owner = msg.sender;
-    allowances[owner][spender] = amount;
+    _allowances[owner][spender] = amount;
 
     emit Approval(owner, spender, amount);
 
@@ -130,21 +128,21 @@ contract Main is IERC20, IERC20Metadata, Ownable {
     address to,
     uint256 amount
   ) external validAddress(owner) validAddress(to) returns (bool) {
-    require(allowances[owner][msg.sender] >= amount, '');
-    require(balances[owner] >= amount, '');
+    require(_allowances[owner][msg.sender] >= amount, '');
+    require(_balances[owner] >= amount, '');
 
-    allowances[owner][msg.sender] -= amount;
-    balances[owner] -= amount;
-    balances[to] -= amount;
+    _allowances[owner][msg.sender] -= amount;
+    _balances[owner] -= amount;
+    _balances[to] -= amount;
 
     emit Transfer(owner, to, amount);
     return true;
   }
 
   function mint(address to, uint amount) public onlyOwner {
-    require(amount + _totalSupply <= _supplyLimit, 'LC can not mint more than ${_supplyLimit}');
+    require(amount + _totalSupply <= _supplyLimit, 'LLC can not mint more than ${_supplyLimit}');
     
     _totalSupply += amount;
-    balances[to] += amount;
+    _balances[to] += amount;
   }
 }
