@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "main": "index.js",
   "license": "MIT",
+  "type": "module",
   "scripts": {
     "dev": "lite-server"
   },
@@ -11,8 +12,6 @@
     "truffle": "^5.4.30"
   },
   "devDependencies": {
-    "ganache-cli": "^6.12.2",
-    "lite-server": "^2.6.1",
-    "vue": "^3.2.29"
+    "ganache-cli": "^6.12.2"
   }
 }
