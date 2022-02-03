@@ -10,8 +10,12 @@
     <div class="row">
       <div class="container col-sm-8 col-sm-push-4 col-md-6 col-md-push-6">
         <div class="row gap-2 mb-3">
+          <h4 class="col">錢包位址：</h4>
+          <span class="col">{{ account }}</span>
+        </div>
+        <div class="row gap-2 mb-3">
           <h4 class="col">錢包餘額：</h4>
-          <span class="col">{{ formatBalance }}</span>
+          <span class="col">{{ $formatter.balance($transfer.toWei(balance)) }}</span>
         </div>
         <div class="row gap-2 mb-3">
           <h4>轉帳</h4>
@@ -31,34 +35,42 @@
 </template>
 
 <script>
-import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap";
-
-import Web3 from "web3";
-
 export default {
   name: "Index",
   data() {
     return {
+      account: "",
       balance: 0,
-      decimals: 18,
-      web3: null,
     };
   },
   async created() {
-    // 取得網頁上的 web3 物件，若無法取得，預設抓取 ganache 上的資料，取得型別為陣列，需要再解析
-    this.web3 = typeof window.web3 !== "undefined" ? new Web3(window.web3.currentProvider) : new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
-    console.log(window.ethereum);
-    console.log(await this.web3.eth.getAccounts());
+    console.log("eth:", await this.$web3.eth.getAccounts());
+    this.getAccount();
   },
-  computed: {
-    formatBalance() {
-      return this.balance.toFixed(this.decimals);
+  computed: {},
+  watch: {
+    account() {
+      console.log("account: ", this.account);
+      if (this.$assertor.isAddress(this.account)) {
+        this.getBalance(this.account);
+      }
     },
   },
   methods: {
-    isAddress(address) {
-      return this.web3.isAddress(address);
+    getAccount() {
+      this.$web3.eth
+        .getAccounts()
+        .then((data) => (this.account = data[0]))
+        .catch((err) => console.log("err:", err));
+    },
+    getBalance(account) {
+      this.$web3.eth
+        .getBalance(account)
+        .then((data) => {
+          console.log("bal:", data);
+          this.balance = data;
+        })
+        .catch((err) => console.log("err:", err));
     },
   },
 };

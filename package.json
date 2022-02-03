@@ -3,10 +3,6 @@
   "version": "0.0.1",
   "main": "index.js",
   "license": "MIT",
-  "type": "module",
-  "scripts": {
-    "dev": "lite-server"
-  },
   "dependencies": {
     "@openzeppelin/contracts": "^4.4.2",
     "truffle": "^5.4.30"
