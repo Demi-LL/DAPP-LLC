@@ -1,5 +1,6 @@
 pragma solidity ^0.8.0;
 
+import '@openzeppelin/contracts/utils/Strings.sol';
 import '@openzeppelin/contracts/access/Ownable.sol';
 import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import '@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol';
@@ -70,7 +71,7 @@ contract LLC is IERC20, IERC20Metadata, Ownable {
     * Emits a {Transfer} event.
     */
   function transfer(address to, uint256 amount) public virtual override validAddress(to) returns (bool) {
-      require(_balances[msg.sender] >= amount, 'amount too large');
+      require(_balances[msg.sender] >= amount, 'Transfer amount is larger than the balance of wallet.');
 
     _balances[msg.sender] -= amount;
     _balances[to] += amount;
@@ -140,7 +141,7 @@ contract LLC is IERC20, IERC20Metadata, Ownable {
   }
 
   function mint(address to, uint amount) public onlyOwner {
-    require(amount + _totalSupply <= _supplyLimit, 'LLC can not mint more than ${_supplyLimit}');
+    require(amount + _totalSupply <= _supplyLimit, string(bytes.concat(bytes('LLC can not mint more than '), bytes(Strings.toString(_supplyLimit)))));
     
     _totalSupply += amount;
     _balances[to] += amount;

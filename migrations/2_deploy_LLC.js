@@ -1,5 +1,5 @@
-const Migrations = artifacts.require("LLC");
+const LLC = artifacts.require("LLC");
 
 module.exports = function (deployer) {
-  deployer.deploy(Migrations, "LLC");
+  deployer.deploy(LLC, "LLC");
 };
