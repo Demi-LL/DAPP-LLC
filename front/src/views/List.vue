@@ -50,7 +50,7 @@ export default {
       this.contract.then((ins) =>
         this.accounts.forEach(async (account) => {
           const balance = await ins.balanceOf(account);
-          this.balances[account] = balance;
+          this.balances[account] = this.$transfer.weiToDecimals(balance);
         })
       );
     },

@@ -19,7 +19,7 @@ contract LLC is IERC20, IERC20Metadata, Ownable {
     _name = 'LLC';
     _symbol = coin_symbol;
     _decimals = 18; // 10 ^ 18 = 1 LLC
-    _supplyLimit = 1024; // maximum supply = 1024
+    _supplyLimit = 1024 * (10 ** _decimals); // maximum supply = 1024 LLC = 1024 * (10**18) wei
     _totalSupply = 0;
   }
 

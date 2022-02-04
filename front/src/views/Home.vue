@@ -73,7 +73,7 @@ export default {
       if (this.$assertor.isAddress(this.account)) {
         this.contract
           .then((obj) => obj.balanceOf(this.account))
-          .then((balance) => (this.balance = balance))
+          .then((balance) => (this.balance = this.$transfer.weiToDecimals(balance)))
           .catch((err) => console.log("err:", err));
       }
     },
@@ -87,7 +87,7 @@ export default {
       }
 
       this.contract
-        .then((obj) => obj.transfer(this.transferTo, this.transferAmount, { from: this.account, gas: 10000000 }))
+        .then((obj) => obj.transfer(this.transferTo, this.$transfer.decimalsToWei(this.transferAmount), { from: this.account, gas: 10000000 }))
         .then(() => alert(`成功轉帳 ${this.transferAmount} 個 ${this.name}`))
         .then(() => this.getBalance())
         .catch((err) => alert(err));
@@ -102,7 +102,7 @@ export default {
       }
 
       this.contract
-        .then((obj) => obj.mint(this.mintTo, this.mintAmount, { from: this.account, gas: 10000000 }))
+        .then((obj) => obj.mint(this.mintTo, this.$transfer.decimalsToWei(this.mintAmount), { from: this.account, gas: 10000000 }))
         .then(() => alert(`成功鑄造 ${this.mintAmount} 個 ${this.name}`))
         .then(() => this.getBalance())
         .catch((err) => alert(err));
