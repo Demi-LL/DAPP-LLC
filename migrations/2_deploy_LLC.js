@@ -1,5 +1,5 @@
 const LLC = artifacts.require("LLC");
 
 module.exports = function (deployer) {
-  deployer.deploy(LLC, "LLC");
+  deployer.deploy(LLC, "LL Coin", "LLC");
 };
