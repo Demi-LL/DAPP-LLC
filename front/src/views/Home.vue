@@ -37,6 +37,8 @@
 
 <script>
 import { inject } from "vue";
+
+const GAS_LIMIT = 5500000
 export default {
   name: "Index",
   setup() {
@@ -87,7 +89,7 @@ export default {
       }
 
       this.contract
-        .then((obj) => obj.transfer(this.transferTo, this.$transfer.decimalsToWei(this.transferAmount), { from: this.account, gas: 10000000 }))
+        .then((obj) => obj.transfer(this.transferTo, this.$transfer.decimalsToWei(this.transferAmount), { from: this.account, gas: GAS_LIMIT }))
         .then(() => alert(`成功轉帳 ${this.transferAmount} 個 ${this.name}`))
         .then(() => this.getBalance())
         .catch((err) => alert(err));
@@ -102,7 +104,7 @@ export default {
       }
 
       this.contract
-        .then((obj) => obj.mint(this.mintTo, this.$transfer.decimalsToWei(this.mintAmount), { from: this.account, gas: 10000000 }))
+        .then((obj) => obj.mint(this.mintTo, this.$transfer.decimalsToWei(this.mintAmount), { from: this.account, gas: GAS_LIMIT }))
         .then(() => alert(`成功鑄造 ${this.mintAmount} 個 ${this.name}`))
         .then(() => this.getBalance())
         .catch((err) => alert(err));
