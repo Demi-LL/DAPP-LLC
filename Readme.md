@@ -8,6 +8,9 @@
 $ yarn run ganache
 ```
 
+## Ethereum testnet
+- [deploy API](https://infura.io/)
+
 ## Truffle
 
 - Initialize truffle suit file structure.
@@ -38,3 +41,6 @@ $ yarn run dev
   - Show your first account and all of your DAPP features.
 - /list
   - This page show all of the accounts under your wallet.
+
+## References
+- [deploy contract to testnet](./references/Testnet.md)
