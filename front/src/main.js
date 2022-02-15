@@ -15,8 +15,10 @@ const app = createApp(App);
 if (typeof window.ethereum === "undefined") {
   app.config.globalProperties.$web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
 } else {
-  // 與 metamask 的連線需要授權，若未經過 enable() 的授權同意，狐狸錢包無法透過 web3.js 取得資料
-  window.ethereum.enable();
+  // 與 metamask 的連線需要授權，若未經過 eth_requestAccounts() 的授權同意，狐狸錢包無法透過 web3.js 取得資料
+  window.ethereum
+    .request({ method: 'eth_requestAccounts' })
+    .catch((error) => console.log(error));
   app.config.globalProperties.$web3 = new Web3(window.ethereum);
 }
 

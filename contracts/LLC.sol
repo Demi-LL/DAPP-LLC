@@ -11,6 +11,7 @@ contract LLC is IERC20, IERC20Metadata, Ownable {
   uint8 private _decimals; // 支援到小數後幾位
   uint256 private _supplyLimit; // 最大提供上限
   uint256 private _totalSupply; // 目前已發放數量
+  address[] private _ownersList; // 擁有代幣的所有帳戶地址
 
   mapping(address => uint256) private _balances; // 各個帳號所擁有的貨幣數量
   mapping(address => mapping(address => uint256)) private _allowances; // 授權其他帳號操作的貨幣數量
@@ -52,6 +53,13 @@ contract LLC is IERC20, IERC20Metadata, Ownable {
   }
 
   /**
+    * 取得當前已鑄造的虛擬貨幣數量
+    */
+  function ownersList() public view returns (address[] memory) {
+    return _ownersList;
+  }
+
+  /**
     * 取得特定錢包的貨幣數量
     */
   function balanceOf(address account) external view virtual override returns (uint256) {
@@ -74,9 +82,31 @@ contract LLC is IERC20, IERC20Metadata, Ownable {
   }
 
   /**
+    * 記錄擁有過 LLC 的帳戶地址
+    * TODO: 優化排除重複紀錄的檢查方式
+    */
+  modifier recordOwnerAddress(address to) {
+    _;
+    uint i = 0;
+    bool canPush = true;
+    while(i < _ownersList.length) {
+      if (_ownersList[i] == to) {
+        canPush = false;
+        break;
+      }
+
+      i++;
+    }
+
+    if (canPush) {
+      _ownersList.push(to);
+    }
+  }
+
+  /**
     * 將當前帳號內的貨幣轉換到 to 帳號內
     */
-  function transfer(address to, uint256 amount) public virtual override validAddress(to) returns (bool) {
+  function transfer(address to, uint256 amount) public virtual override validAddress(to) recordOwnerAddress(to) returns (bool) {
     require(_balances[msg.sender] >= amount, "Transfer amount is larger than the balance of wallet.");
 
     _balances[msg.sender] -= amount;
@@ -123,7 +153,7 @@ contract LLC is IERC20, IERC20Metadata, Ownable {
     * 鑄造貨幣
     * 只開放合約部署者操作
     */
-  function mint(address to, uint amount) public onlyOwner {
+  function mint(address to, uint amount) public onlyOwner recordOwnerAddress(to) {
     require(amount + _totalSupply <= _supplyLimit, string(bytes.concat(bytes("LLC cannot be minted more than "), bytes(Strings.toString(_supplyLimit)))));
     
     _totalSupply += amount;
